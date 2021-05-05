@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  lambda-webcron
+
+  Web cron for Nextcloud
+Globals:
+  Function:
+    Timeout: 30
+
+Parameters:
+  WebCronUrl:
+    Description: URL of the webcron target
+    Type: String
+    AllowedPattern: '^https?://.+'
+  WebCronRate:
+    Description: >
+      Interval of the web cron
+      - Default: rate(5 minutes)
+      - Ref. https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-schedule-expressions.html
+    Type: String
+    Default: rate(5 minutes)
+
+Resources:
+  WebCronFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: webcron
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Environment:
+        Variables:
+          webcron_url: !Ref WebCronUrl
+      Events:
+        WebCronSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: !Ref WebCronRate
+            Name: WebCronSchedule
+            Description: Web cron schedule
+            Enabled: True
+
+Outputs:
+  WebCronFunction:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt WebCronFunction.Arn
