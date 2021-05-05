@@ -1,24 +1,40 @@
 # cfn-nextcloud-webcron
 
-## Parameters
+This AWS SAM CloudFormation template creates a Lambda function that periodically calls a cron.php on a Nextcloud server.
 
-| Parameter   | Default Value   | Description                             |
-|-------------|-----------------|-----------------------------------------|
-| WebCronUrl  | -               | The URL of the cron.php on your server. |
-| WebCronRate | rate(5 minutes) | Web cron rate.                          |
+Ref. https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#webcron
+
+## Cloudformation Parameters
+
+| Parameter   | Description                             | Default Value   |
+|-------------|-----------------------------------------|-----------------|
+| WebCronUrl  | The URL of the cron.php on your server. | -               |
+| WebCronRate | Web cron rate.                          | rate(5 minutes) |
 
 
 ## Setup
 
+You need to setup the following tools.
+- AWS CLI
+- AWS SAM
+
+
+The following steps are examples for Mac OS.
+
+
 ### AWS CLI
+
+You have to have AWS CLI to use AWS SAM command.
+See also https://brew.sh to install `brew` command.
 
 ``` bash
 brew install awscli
 ```
 
+
 ### Configure AWS credentials
 
-Create Access key then configure the AWS credentials
+Create Access key on AWS console then configure the AWS credentials.
 
 ``` bash
 aws configure
@@ -44,6 +60,7 @@ brew tap aws/tap
 brew install aws-sam-cli
 ```
 
+
 ### Install Pyenv
 
 https://github.com/pyenv/pyenv#installation
@@ -54,6 +71,7 @@ eval $(pyenv init -)
 echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.zshrc
 ```
 
+
 ### Setup python environment
 
 ``` bash
@@ -62,6 +80,7 @@ pyenv install 3.8.5
 pyenv virtualenv 3.8.5 cfn-nextcloud-webcron
 pyenv local cfn-nextcloud-webcron
 ```
+
 
 ## Deploy
 
@@ -73,6 +92,7 @@ sam deploy --guided
 ```
 
 Here is an example of the `sam deploy --guided` command.
+Once you save the config in the file (samconfig.toml by default), all values are stored in the toml file. Then you don't need to use `--guided` option from next time.
 
 ``` bash
 $ sam deploy --guided
@@ -105,7 +125,18 @@ Deploy this changeset? [y/N]:
 ```
 
 
+### Delete stack
+
+If you don't need the function, you can delete all AWS resources using the following command.
+You have to specify the same stack name with `sam deploy` command
+
+``` bash
+aws cloudformation delete-stack --stack-name nextcloud-webcron
+```
+
+
 ## Development
+
 
 ### Create environment
 
@@ -117,6 +148,7 @@ pyenv local cfn-nextcloud-webcron
 pip install -r webcron/requirements.txt
 pip install -r tests/requirements.txt
 ```
+
 
 ### Test
 
