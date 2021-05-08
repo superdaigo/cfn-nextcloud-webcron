@@ -18,8 +18,8 @@ def lambda_handler(event, context):
         return None
     res = requests.get(webcron_url)
     if res.ok:
+        logger.info(f"{res.text}")
         res_json = res.json()
-        logger.info(f"{res_json}")
     else:
         logger.error(f"{res.status_code} {res.reason}")
         raise Exception(f"{res.status_code} {res.reason}")
